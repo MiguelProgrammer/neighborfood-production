@@ -18,6 +18,9 @@ public class AcompanhamentoChainRecebido implements AcompanhamentoChain {
         this.acompanhamentoGateway = acompanhamentoGateway;
     }
 
+    public AcompanhamentoChainRecebido() {
+    }
+
     @Override
     public String sms(Status status) {
         return status.equals(Status.RECEBIDO) ? MESSAGE_RECEBIDO :

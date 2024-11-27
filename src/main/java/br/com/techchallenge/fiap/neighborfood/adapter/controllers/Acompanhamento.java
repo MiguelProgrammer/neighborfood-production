@@ -4,6 +4,7 @@
 
 package br.com.techchallenge.fiap.neighborfood.adapter.controllers;
 
+import br.com.techchallenge.fiap.neighborfood.adapter.presenter.AcompanhamentoResponse;
 import br.com.techchallenge.fiap.neighborfood.core.domain.dto.AcompanhamentoResponseDTO;
 import br.com.techchallenge.fiap.neighborfood.core.usecase.acompanhamento.AcompanhamentoUseCase;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,8 @@ public class Acompanhamento {
     }
 
     public AcompanhamentoResponseDTO statusDoPedido(Long idPedido) {
-        return acompanhamentoUseCase.getOrderStatus(idPedido);
+        AcompanhamentoResponse orderStatusExecute = acompanhamentoUseCase.getOrderStatusExecute(idPedido);
+        return orderStatusExecute.pedidoFromResponse();
     }
 
 }

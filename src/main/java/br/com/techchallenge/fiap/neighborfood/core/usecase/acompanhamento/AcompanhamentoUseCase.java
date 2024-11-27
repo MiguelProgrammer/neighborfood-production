@@ -5,43 +5,77 @@
 package br.com.techchallenge.fiap.neighborfood.core.usecase.acompanhamento;
 
 import br.com.techchallenge.fiap.neighborfood.adapter.gateways.AcompanhamentoGateway;
+import br.com.techchallenge.fiap.neighborfood.adapter.gateways.PedidoGateway;
+import br.com.techchallenge.fiap.neighborfood.adapter.presenter.AcompanhamentoResponse;
 import br.com.techchallenge.fiap.neighborfood.config.exceptions.PedidoException;
-import br.com.techchallenge.fiap.neighborfood.core.domain.dto.AcompanhamentoResponseDTO;
 import br.com.techchallenge.fiap.neighborfood.core.domain.enums.Status;
+import br.com.techchallenge.fiap.neighborfood.core.domain.pedido.Pedido;
 import br.com.techchallenge.fiap.neighborfood.core.usecase.acompanhamento.acompanhachain.status.anemic.AcompanhamentoChainRecebido;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 @Component
 public class AcompanhamentoUseCase {
 
+    private PedidoGateway pedidoGateway;
     private AcompanhamentoGateway acompanhamentoGateway;
 
-    public AcompanhamentoUseCase(AcompanhamentoGateway acompanhamentoGateway) {
+    public AcompanhamentoUseCase(PedidoGateway pedidoGateway, AcompanhamentoGateway acompanhamentoGateway) {
+        this.pedidoGateway = pedidoGateway;
         this.acompanhamentoGateway = acompanhamentoGateway;
     }
 
-    public AcompanhamentoResponseDTO getOrderStatus(Long idPedido) {
+    public AcompanhamentoResponse getOrderStatusExecute(Long idPedido) {
 
-        //Pedido pedido;
+        Pedido pedido = new Pedido();
         try {
-            //pedido = pedidoGateway.findById(idPedido);
+            pedido = pedidoGateway.findById(idPedido);
 
-//            if (pedido.getStatus().equals(Status.EM_PREPARACAO)) {
-//                this.pedidoStatus(idPedido, Status.PRONTO);
-//                pedido.setStatus(Status.PRONTO);
-//            } else if (pedido.getStatus().equals(Status.PRONTO)) {
-//                this.fluxoStatusPedido(idPedido, Status.FINALIZADO);
-//                pedido.setStatus(Status.FINALIZADO);
-//            }
+            if (pedido.getStatus().equals(Status.RECEBIDO)) {
+                this.pedidoStatusExecute(idPedido, Status.EM_PREPARACAO);
+                pedido.setStatus(Status.EM_PREPARACAO);
+
+                return new AcompanhamentoResponse().pedidoEntityFromResponse(pedidoGateway.findById(pedido.getId()).domainFromEntity());
+            } else if (pedido.getStatus().equals(Status.EM_PREPARACAO)) {
+                this.pedidoStatusExecute(idPedido, Status.PRONTO);
+                pedido.setStatus(Status.PRONTO);
+
+                return new AcompanhamentoResponse().pedidoEntityFromResponse(pedidoGateway.findById(pedido.getId()).domainFromEntity());
+            } else if (pedido.getStatus().equals(Status.PRONTO)) {
+                this.fluxoStatusPedidoExecute(idPedido, Status.FINALIZADO);
+                pedido.setStatus(Status.FINALIZADO);
+
+                return new AcompanhamentoResponse().pedidoEntityFromResponse(pedidoGateway.findById(pedido.getId()).domainFromEntity());
+            }
         } catch (Exception ex) {
             throw new PedidoException("Pedido não encontrado!");
         }
-        return null;//pedidoGateway.pedido(pedido);
+        return new AcompanhamentoResponse().pedidoEntityFromResponse(pedidoGateway.findById(pedido.getId()).domainFromEntity());
+    }
+
+
+
+    public void fluxoStatusPedidoExecute(Long idPedido, Status status) {
+        Pedido pedidoDTO = pedidoGateway.findById(idPedido);
+        pedidoDTO.setStatus(status);
+        if (pedidoDTO.getStatus().equals(Status.FINALIZADO)) {
+            pedidoDTO.setDataPedidoFim(new Date());
+        }
+        pedidoGateway.update(pedidoDTO.domainFromEntity());
+        System.out.println(this.smsExecute(pedidoDTO.getStatus()));
+    }
+
+
+    public void pedidoStatusExecute(Long idPedido, Status status) {
+        Pedido pedidoDTO = pedidoGateway.findById(idPedido);
+        pedidoDTO.setStatus(status);
+        Pedido pedidoDTO1 = pedidoGateway.update(pedidoDTO.domainFromEntity());
+        System.out.println(this.smsExecute(pedidoDTO1.getStatus()));
     }
 
     public String smsExecute(Status status) {
-        return new AcompanhamentoChainRecebido(acompanhamentoGateway).sms(status);
+        return new AcompanhamentoChainRecebido().sms(status);
     }
-
 
 }
