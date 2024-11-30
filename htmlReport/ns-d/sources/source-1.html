@@ -1,0 +1,194 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1252"> 
+  <title>Coverage Report > AcompanhamentoUseCase</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">br.com.techchallenge.fiap.neighborfood.core.usecase.acompanhamento</a>
+</div>
+
+<h1>Coverage Summary for Class: AcompanhamentoUseCase (br.com.techchallenge.fiap.neighborfood.core.usecase.acompanhamento)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AcompanhamentoUseCase</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25.8%
+  </span>
+  <span class="absValue">
+    (8/31)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;/*
+&nbsp; * Copyright (c) 2024. MiguelProgrammer
+&nbsp; */
+&nbsp;
+&nbsp;package br.com.techchallenge.fiap.neighborfood.core.usecase.acompanhamento;
+&nbsp;
+&nbsp;import br.com.techchallenge.fiap.neighborfood.adapter.gateways.AcompanhamentoGateway;
+&nbsp;import br.com.techchallenge.fiap.neighborfood.adapter.gateways.PedidoGateway;
+&nbsp;import br.com.techchallenge.fiap.neighborfood.adapter.presenter.AcompanhamentoResponse;
+&nbsp;import br.com.techchallenge.fiap.neighborfood.config.exceptions.PedidoException;
+&nbsp;import br.com.techchallenge.fiap.neighborfood.core.domain.enums.Status;
+&nbsp;import br.com.techchallenge.fiap.neighborfood.core.domain.pedido.Pedido;
+&nbsp;import br.com.techchallenge.fiap.neighborfood.core.usecase.acompanhamento.acompanhachain.status.anemic.AcompanhamentoChainRecebido;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.util.Date;
+&nbsp;
+&nbsp;@Component
+&nbsp;public class AcompanhamentoUseCase {
+&nbsp;
+&nbsp;    private PedidoGateway pedidoGateway;
+&nbsp;    private AcompanhamentoGateway acompanhamentoGateway;
+&nbsp;
+<b class="fc">&nbsp;    public AcompanhamentoUseCase(PedidoGateway pedidoGateway, AcompanhamentoGateway acompanhamentoGateway) {</b>
+<b class="fc">&nbsp;        this.pedidoGateway = pedidoGateway;</b>
+<b class="fc">&nbsp;        this.acompanhamentoGateway = acompanhamentoGateway;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public AcompanhamentoResponse getOrderStatusExecute(Long idPedido) {
+&nbsp;
+<b class="fc">&nbsp;        Pedido pedido = new Pedido();</b>
+&nbsp;        try {
+<b class="fc">&nbsp;            pedido = pedidoGateway.findById(idPedido);</b>
+&nbsp;
+<b class="pc">&nbsp;            if (pedido.getStatus().equals(Status.RECEBIDO)) {</b>
+<b class="nc">&nbsp;                this.pedidoStatusExecute(idPedido, Status.EM_PREPARACAO);</b>
+<b class="nc">&nbsp;                pedido.setStatus(Status.EM_PREPARACAO);</b>
+&nbsp;
+<b class="nc">&nbsp;                return new AcompanhamentoResponse().pedidoEntityFromResponse(pedidoGateway.findById(pedido.getId()).domainFromEntity());</b>
+<b class="nc">&nbsp;            } else if (pedido.getStatus().equals(Status.EM_PREPARACAO)) {</b>
+<b class="nc">&nbsp;                this.pedidoStatusExecute(idPedido, Status.PRONTO);</b>
+<b class="nc">&nbsp;                pedido.setStatus(Status.PRONTO);</b>
+&nbsp;
+<b class="nc">&nbsp;                return new AcompanhamentoResponse().pedidoEntityFromResponse(pedidoGateway.findById(pedido.getId()).domainFromEntity());</b>
+<b class="nc">&nbsp;            } else if (pedido.getStatus().equals(Status.PRONTO)) {</b>
+<b class="nc">&nbsp;                this.fluxoStatusPedidoExecute(idPedido, Status.FINALIZADO);</b>
+<b class="nc">&nbsp;                pedido.setStatus(Status.FINALIZADO);</b>
+&nbsp;
+<b class="nc">&nbsp;                return new AcompanhamentoResponse().pedidoEntityFromResponse(pedidoGateway.findById(pedido.getId()).domainFromEntity());</b>
+&nbsp;            }
+<b class="fc">&nbsp;        } catch (Exception ex) {</b>
+<b class="fc">&nbsp;            throw new PedidoException(&quot;Pedido não encontrado!&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return new AcompanhamentoResponse().pedidoEntityFromResponse(pedidoGateway.findById(pedido.getId()).domainFromEntity());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void fluxoStatusPedidoExecute(Long idPedido, Status status) {
+<b class="nc">&nbsp;        Pedido pedidoDTO = pedidoGateway.findById(idPedido);</b>
+<b class="nc">&nbsp;        pedidoDTO.setStatus(status);</b>
+<b class="nc">&nbsp;        if (pedidoDTO.getStatus().equals(Status.FINALIZADO)) {</b>
+<b class="nc">&nbsp;            pedidoDTO.setDataPedidoFim(new Date());</b>
+&nbsp;        }
+<b class="nc">&nbsp;        pedidoGateway.update(pedidoDTO.domainFromEntity());</b>
+<b class="nc">&nbsp;        System.out.println(this.smsExecute(pedidoDTO.getStatus()));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void pedidoStatusExecute(Long idPedido, Status status) {
+<b class="nc">&nbsp;        Pedido pedidoDTO = pedidoGateway.findById(idPedido);</b>
+<b class="nc">&nbsp;        pedidoDTO.setStatus(status);</b>
+<b class="nc">&nbsp;        Pedido pedidoDTO1 = pedidoGateway.update(pedidoDTO.domainFromEntity());</b>
+<b class="nc">&nbsp;        System.out.println(this.smsExecute(pedidoDTO1.getStatus()));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private String smsExecute(Status status) {
+<b class="nc">&nbsp;        return new AcompanhamentoChainRecebido().sms(status);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-11-30 20:17</div>
+</div>
+</body>
+</html>

@@ -54,9 +54,7 @@ public class AcompanhamentoUseCase {
         return new AcompanhamentoResponse().pedidoEntityFromResponse(pedidoGateway.findById(pedido.getId()).domainFromEntity());
     }
 
-
-
-    public void fluxoStatusPedidoExecute(Long idPedido, Status status) {
+    private void fluxoStatusPedidoExecute(Long idPedido, Status status) {
         Pedido pedidoDTO = pedidoGateway.findById(idPedido);
         pedidoDTO.setStatus(status);
         if (pedidoDTO.getStatus().equals(Status.FINALIZADO)) {
@@ -66,15 +64,14 @@ public class AcompanhamentoUseCase {
         System.out.println(this.smsExecute(pedidoDTO.getStatus()));
     }
 
-
-    public void pedidoStatusExecute(Long idPedido, Status status) {
+    private void pedidoStatusExecute(Long idPedido, Status status) {
         Pedido pedidoDTO = pedidoGateway.findById(idPedido);
         pedidoDTO.setStatus(status);
         Pedido pedidoDTO1 = pedidoGateway.update(pedidoDTO.domainFromEntity());
         System.out.println(this.smsExecute(pedidoDTO1.getStatus()));
     }
 
-    public String smsExecute(Status status) {
+    private String smsExecute(Status status) {
         return new AcompanhamentoChainRecebido().sms(status);
     }
 

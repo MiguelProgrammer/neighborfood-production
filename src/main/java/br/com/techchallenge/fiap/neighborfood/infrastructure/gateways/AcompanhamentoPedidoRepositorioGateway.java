@@ -8,7 +8,6 @@ import br.com.techchallenge.fiap.neighborfood.adapter.gateways.AcompanhamentoGat
 import br.com.techchallenge.fiap.neighborfood.adapter.presenter.AcompanhamentoResponse;
 import br.com.techchallenge.fiap.neighborfood.core.domain.dto.AcompanhamentoResponseDTO;
 import br.com.techchallenge.fiap.neighborfood.core.domain.enums.Status;
-import br.com.techchallenge.fiap.neighborfood.core.usecase.acompanhamento.acompanhachain.status.anemic.AcompanhamentoChainRecebido;
 import br.com.techchallenge.fiap.neighborfood.infrastructure.persistence.acompanhamento.AcompanhamentoRepository;
 import br.com.techchallenge.fiap.neighborfood.infrastructure.persistence.order.PedidoRepository;
 import br.com.techchallenge.fiap.neighborfood.infrastructure.persistence.order.entities.PedidoEntity;
@@ -20,11 +19,11 @@ import java.util.Optional;
 public class AcompanhamentoPedidoRepositorioGateway implements AcompanhamentoGateway {
 
     private AcompanhamentoRepository repository;
-    private AcompanhamentoGateway acompanhamentoGateway;
     private PedidoRepository pedidoRepository;
 
-    public AcompanhamentoPedidoRepositorioGateway(AcompanhamentoRepository repository) {
+    public AcompanhamentoPedidoRepositorioGateway(AcompanhamentoRepository repository, PedidoRepository pedidoRepository) {
         this.repository = repository;
+        this.pedidoRepository = pedidoRepository;
     }
 
     @Override
@@ -35,23 +34,10 @@ public class AcompanhamentoPedidoRepositorioGateway implements AcompanhamentoGat
         return acp.pedidoFromResponse();
     }
 
-
-    @Override
-    public String sms(Status status) {
-        return new AcompanhamentoChainRecebido(acompanhamentoGateway).sms(status);
-    }
-
-
     @Override
     public void fluxoStatusPedido(Long idPedido, Status status) {
-//        Optional<PedidoEntity> pedido = pedidoRepository.findById(idPedido);
-//        pedido.get().setStatus(status);
-//        pedidoRepository.save(pedido.get());
-    }
-
-
-    @Override
-    public void pedidoStatus(Long idPedido, Status Status) {
-        //acompanhamentoUseCasePort.pedidoStatusExecute(idPedido, Status);
+        Optional<PedidoEntity> pedido = pedidoRepository.findById(idPedido);
+        pedido.get().setStatus(status);
+        pedidoRepository.save(pedido.get());
     }
 }

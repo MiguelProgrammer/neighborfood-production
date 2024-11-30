@@ -27,7 +27,7 @@ public class PedidoRepositoryGateway implements PedidoGateway {
     @Override
     public Pedido findById(Long id) {
         Optional<PedidoEntity> pedidoById = pedidoRepository.findById(id);
-        PedidoEntity pedidoEntity = null;
+        PedidoEntity pedidoEntity = new PedidoEntity();
         if(pedidoById.isPresent()) {
             pedidoEntity = pedidoById.get();
             pedidoEntity.setItensProdutos(itensRepository.findByIdPedido(pedidoEntity.getId()));
