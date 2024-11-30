@@ -2,6 +2,7 @@ package br.com.techchallenge.fiap.neighborfood.core.domain;/*
  * Copyright (c) 2024. MiguelProgrammer
  */
 
+@SuppressWarnings("test")
 public class Finals {
 
 

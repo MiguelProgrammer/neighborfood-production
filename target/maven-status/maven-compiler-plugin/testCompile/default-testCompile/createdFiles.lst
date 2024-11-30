@@ -1,0 +1,5 @@
+br\com\techchallenge\fiap\neighborfood\framework\web\AcompanhamentoControllerTest.class
+br\com\techchallenge\fiap\neighborfood\infrastructure\persistence\acompanhamento\AcompanhamentoRepositoryTest.class
+br\com\techchallenge\fiap\neighborfood\infrastructure\persistence\order\PedidoRepositoryTest.class
+br\com\techchallenge\fiap\neighborfood\core\usecase\acompanhamento\AcompanhamentoUseCaseTest.class
+br\com\techchallenge\fiap\neighborfood\infrastructure\persistence\order\ItensRepositoryTest.class
