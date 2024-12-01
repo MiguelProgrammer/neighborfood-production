@@ -2,10 +2,10 @@
 
 
 # Allure Report dashboard
-* <img src="https://i.imgur.com/MBa9fzo.png">
+* <img src="https://i.imgur.com/OVAAcQc.png">
 
 # Cucumber
-* <img src="https://i.imgur.com/OVAAcQc.png">
+* <img src="https://i.imgur.com/MBa9fzo.png">
 * <img src="https://i.imgur.com/1l2yM9v.png">
 
 # jUnit & Mockito
